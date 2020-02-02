@@ -1,0 +1,160 @@
+{
+  "results": [
+    {
+      "country": "澳大利亚",
+      "provinceName": "澳大利亚",
+      "provinceShortName": "澳大利亚",
+      "confirmedCount": 12,
+      "suspectedCount": 0,
+      "curedCount": 2,
+      "deadCount": 0,
+      "cities": null,
+      "comment": "",
+      "updateTime": 1580620159958,
+      "createTime": 1580027777000,
+      "modifyTime": 1580620070000
+    },
+    {
+      "country": "新加坡",
+      "provinceName": "新加坡",
+      "provinceShortName": "新加坡",
+      "confirmedCount": 18,
+      "suspectedCount": 0,
+      "curedCount": 0,
+      "deadCount": 0,
+      "cities": null,
+      "comment": "",
+      "updateTime": 1580619434076,
+      "createTime": 1580027655000,
+      "modifyTime": 1580619404000
+    },
+    {
+      "country": "中国",
+      "provinceName": "湖南省",
+      "provinceShortName": "湖南",
+      "confirmedCount": 463,
+      "suspectedCount": 0,
+      "curedCount": 11,
+      "deadCount": 0,
+      "cities": [
+        {
+          "cityName": "长沙",
+          "confirmedCount": 112,
+          "suspectedCount": 0,
+          "curedCount": 2,
+          "deadCount": 0,
+          "locationId": 430100
+        },
+        {
+          "cityName": "岳阳",
+          "confirmedCount": 53,
+          "suspectedCount": 0,
+          "curedCount": 0,
+          "deadCount": 0,
+          "locationId": 430600
+        },
+        {
+          "cityName": "邵阳",
+          "confirmedCount": 49,
+          "suspectedCount": 0,
+          "curedCount": 1,
+          "deadCount": 0,
+          "locationId": 430500
+        },
+        {
+          "cityName": "常德",
+          "confirmedCount": 42,
+          "suspectedCount": 0,
+          "curedCount": 0,
+          "deadCount": 0,
+          "locationId": 430700
+        },
+        {
+          "cityName": "怀化",
+          "confirmedCount": 31,
+          "suspectedCount": 0,
+          "curedCount": 1,
+          "deadCount": 0,
+          "locationId": 431200
+        },
+        {
+          "cityName": "衡阳",
+          "confirmedCount": 30,
+          "suspectedCount": 0,
+          "curedCount": 3,
+          "deadCount": 0,
+          "locationId": 430400
+        },
+        {
+          "cityName": "娄底",
+          "confirmedCount": 29,
+          "suspectedCount": 0,
+          "curedCount": 1,
+          "deadCount": 0,
+          "locationId": 431300
+        },
+        {
+          "cityName": "益阳",
+          "confirmedCount": 27,
+          "suspectedCount": 0,
+          "curedCount": 0,
+          "deadCount": 0,
+          "locationId": 430900
+        },
+        {
+          "cityName": "株洲",
+          "confirmedCount": 25,
+          "suspectedCount": 0,
+          "curedCount": 0,
+          "deadCount": 0,
+          "locationId": 430200
+        },
+        {
+          "cityName": "永州",
+          "confirmedCount": 22,
+          "suspectedCount": 0,
+          "curedCount": 2,
+          "deadCount": 0,
+          "locationId": 431100
+        },
+        {
+          "cityName": "郴州",
+          "confirmedCount": 18,
+          "suspectedCount": 0,
+          "curedCount": 1,
+          "deadCount": 0,
+          "locationId": 431000
+        },
+        {
+          "cityName": "湘潭",
+          "confirmedCount": 16,
+          "suspectedCount": 0,
+          "curedCount": 0,
+          "deadCount": 0,
+          "locationId": 430300
+        },
+        {
+          "cityName": "湘西自治州",
+          "confirmedCount": 6,
+          "suspectedCount": 0,
+          "curedCount": 0,
+          "deadCount": 0,
+          "locationId": 433100
+        },
+        {
+          "cityName": "张家界",
+          "confirmedCount": 3,
+          "suspectedCount": 0,
+          "curedCount": 0,
+          "deadCount": 0,
+          "locationId": 430800
+        }
+      ],
+      "comment": "",
+      "updateTime": 1580618843298,
+      "createTime": null,
+      "modifyTime": null
+    }
+  ],
+  "success": true
+}
