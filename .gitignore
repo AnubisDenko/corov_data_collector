@@ -30,3 +30,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+**/*/google-translate.json
+.DS*
+../DS_Store
