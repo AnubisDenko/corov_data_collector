@@ -1,5 +1,7 @@
 package refle.corov_data_collector.model
 
+import org.springframework.data.jpa.repository.Temporal
+import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
@@ -15,12 +17,23 @@ data class DataPoint(
         val curedCount: Int,
         val deadCount: Int,
         val comment: String,
-        val updateTime: Long,
-        val createTime: Long,
-        val modifyTime: Long,
 
-        @OneToMany(mappedBy = "dataPoint", fetch = FetchType.EAGER)
-        val cities: Set<City>? = null,
+        @Temporal(TemporalType.TIMESTAMP)
+        val updateTime: LocalDateTime,
+
+        @Temporal(TemporalType.TIMESTAMP)
+        @Column(nullable = true)
+        val createTime: LocalDateTime?,
+        @Temporal(TemporalType.TIMESTAMP)
+        @Column(nullable = true)
+        val modifyTime: LocalDateTime?,
+
+        @OneToMany(
+                cascade = [ CascadeType.ALL ],
+                orphanRemoval = true,
+                fetch = FetchType.EAGER
+        )
+        val cities: Set<City>,
 
         @Id
         @GeneratedValue
@@ -36,10 +49,6 @@ data class City(
         val curedCount: Int,
         val deadCount: Int,
         val locationId: Int,
-
-        @ManyToOne
-        @JoinColumn(name = "data_id", nullable = false)
-        val dataPoint: DataPoint,
 
         @Id @GeneratedValue
         val id: Long? = null

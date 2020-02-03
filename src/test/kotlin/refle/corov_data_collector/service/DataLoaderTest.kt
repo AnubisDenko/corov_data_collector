@@ -1,7 +1,6 @@
 package refle.corov_data_collector.service
 
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -21,9 +20,13 @@ import org.springframework.web.client.RestTemplate
 import refle.corov_data_collector.Mappers
 import refle.corov_data_collector.config.SourceConfigParams
 import refle.corov_data_collector.loadFixture
-import refle.corov_data_collector.persistence.CityRepo
 import refle.corov_data_collector.persistence.DataPointRepo
 import java.net.URI
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.util.*
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.test.fail
 
@@ -37,7 +40,6 @@ class DataLoaderTest{
     @Autowired private lateinit var sourceConfigParams: SourceConfigParams
 
     @Autowired private lateinit var dataPointRepo: DataPointRepo
-    @Autowired private lateinit var cityRepo: CityRepo
 
     private val mapper = Mappers.DEFAULT
     private lateinit var mockServer: MockRestServiceServer
@@ -58,13 +60,28 @@ class DataLoaderTest{
 
     @Test
     fun `does persist the loaded data in database`(){
+
+
         val response = loadFixture("fixtures/sampleAreaResponse.json")
         expectSuccessfulCallAndReply("${sourceConfigParams.baseUrl}area", response)
         dataLoader.loadData()
 
-        val china = dataPointRepo.findAll().toList().find { it.country == "中国" } ?: fail("No data for China found")
-        val cities = china.cities ?: fail("No cities saved for China data")
-        assertEquals(10, cities.size)
+        val dataPoints = dataPointRepo.findAll().toList()
+        assertEquals(3, dataPoints.size)
+
+        val china = dataPoints.find { it.country == "中国" } ?: fail("No data for China found")
+
+        val expectedUpdateTime = convertToDateTime(1580618843298L)
+        assertEquals(expectedUpdateTime, china.updateTime)
+        assertNull(china.createTime)
+        assertNull(china.modifyTime)
+
+        val cnCities = china.cities ?: fail("No cities saved for China data")
+        assertEquals(14, cnCities.size)
+
+        val australia = dataPoints.find { it.country == "澳大利亚" } ?: fail("No data for Australia")
+        val ausCities = australia.cities
+        assertTrue{ ausCities.isEmpty() }
     }
 
     private fun expectSuccessfulCallAndReply(url: String,responseBody: String?){
@@ -83,4 +100,6 @@ class DataLoaderTest{
                     )
         }
     }
+
+    private val convertToDateTime = { milli:Long -> Instant.ofEpochMilli(milli).atZone(ZoneId.systemDefault()).toLocalDateTime() }
 }

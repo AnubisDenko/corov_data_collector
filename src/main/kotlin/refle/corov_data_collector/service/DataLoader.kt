@@ -6,11 +6,12 @@ import org.springframework.web.client.RestTemplate
 import refle.corov_data_collector.model.City
 import refle.corov_data_collector.model.DataPoint
 import refle.corov_data_collector.model.Response
-import refle.corov_data_collector.persistence.CityRepo
 import refle.corov_data_collector.persistence.DataPointRepo
+import java.time.Instant
+import java.time.ZoneId
 
 @Component
-class DataLoader(@Autowired private val restTemplate: RestTemplate, @Autowired private val dataPointRepo: DataPointRepo, @Autowired private val cityRepo: CityRepo) {
+class DataLoader(@Autowired private val restTemplate: RestTemplate, @Autowired private val dataPointRepo: DataPointRepo) {
     fun loadData() {
         val response = restTemplate.getForObject("/area", Response::class.java) ?: return
         if(!response.success)
@@ -18,21 +19,30 @@ class DataLoader(@Autowired private val restTemplate: RestTemplate, @Autowired p
 
         response.results.forEach { result ->
             with(result){
+                val citiesSet = cities?.map {
+                    City(it.cityName, it.confirmedCount, it.suspectedCount, it.curedCount, it.deadCount, it.locationId)
+                }?.toSet() ?: setOf()
+
+                val updateTime = convertToDateTime(updateTime) ?: return@forEach
+
                 var dataPoint = DataPoint(
-                        country, provinceName, provinceShortName, confirmedCount, suspectedCount, curedCount, deadCount, comment, updateTime, createTime, modifyTime
+                        country, provinceName, provinceShortName, confirmedCount, suspectedCount, curedCount, deadCount, comment,
+                        updateTime,
+                        convertToDateTime(createTime),
+                        convertToDateTime(modifyTime),
+                        citiesSet
                 )
 
-                dataPoint = dataPointRepo.save(dataPoint)
-
-                if(result.cities == null || result.cities.isEmpty())
-                    return@forEach
-
-                result.cities.forEach {
-                    cityRepo.save(City(
-                            it.cityName, it.confirmedCount, it.suspectedCount, it.curedCount, it.deadCount, it.locationId, dataPoint
-                    ))
-                }
+                dataPointRepo.save(dataPoint)
             }
         }
     }
+
+    private val convertToDateTime = { milli:Long ->
+        if(milli == 0L)
+            null
+        else
+            Instant.ofEpochMilli(milli).atZone(ZoneId.systemDefault()).toLocalDateTime()
+    }
+
 }

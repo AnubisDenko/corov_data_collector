@@ -8,6 +8,3 @@ import refle.corov_data_collector.model.Dummy
 
 @Repository
 interface DataPointRepo: CrudRepository<DataPoint, Long>
-
-@Repository
-interface CityRepo : CrudRepository<City, Long>
