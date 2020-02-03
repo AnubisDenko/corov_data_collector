@@ -8,3 +8,6 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   quartz:
     job-store-type: memory
+
+source:
+  baseUrl: https://lab.isaaclin.cn/nCoV/api/
