@@ -48,6 +48,7 @@ class DataLoader(@Autowired private val restTemplate: RestTemplate,
                         citiesSet
                 )
 
+                citiesSet.forEach { it.dataPoint = dataPoint }
                 dataPointRepo.save(dataPoint)
             }
         }

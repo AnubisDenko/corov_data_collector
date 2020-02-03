@@ -29,6 +29,7 @@ data class DataPoint(
                 cascade = [ CascadeType.ALL ],
                 orphanRemoval = true,
                 fetch = FetchType.EAGER
+
         )
         val cities: Set<City>,
 
@@ -49,4 +50,7 @@ data class City(
 
         @Id @GeneratedValue
         val id: Long? = null
-)
+){
+        @ManyToOne
+        lateinit var dataPoint: DataPoint
+}
