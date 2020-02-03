@@ -26,6 +26,7 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.test.fail
@@ -60,8 +61,6 @@ class DataLoaderTest{
 
     @Test
     fun `does persist the loaded data in database`(){
-
-
         val response = loadFixture("fixtures/sampleAreaResponse.json")
         expectSuccessfulCallAndReply("${sourceConfigParams.baseUrl}area", response)
         dataLoader.loadData()
@@ -69,17 +68,21 @@ class DataLoaderTest{
         val dataPoints = dataPointRepo.findAll().toList()
         assertEquals(3, dataPoints.size)
 
-        val china = dataPoints.find { it.country == "中国" } ?: fail("No data for China found")
+        val china = dataPoints.find { it.country == "China" } ?: fail("No data for China found")
 
         val expectedUpdateTime = convertToDateTime(1580618843298L)
         assertEquals(expectedUpdateTime, china.updateTime)
         assertNull(china.createTime)
         assertNull(china.modifyTime)
+        assertEquals("Hunan Province", china.provinceName)
+        assertEquals("Hunan", china.provinceShortName)
 
         val cnCities = china.cities ?: fail("No cities saved for China data")
         assertEquals(14, cnCities.size)
 
-        val australia = dataPoints.find { it.country == "澳大利亚" } ?: fail("No data for Australia")
+        assertNotNull(cnCities.find { it.cityName == "Changsha" })
+
+        val australia = dataPoints.find { it.country == "Australia" } ?: fail("No data for Australia")
         val ausCities = australia.cities
         assertTrue{ ausCities.isEmpty() }
     }

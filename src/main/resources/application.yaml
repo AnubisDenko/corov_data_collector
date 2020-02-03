@@ -10,3 +10,6 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   quartz:
     job-store-type: memory
+
+app:
+  passphrase: ${PASSPHRASE}

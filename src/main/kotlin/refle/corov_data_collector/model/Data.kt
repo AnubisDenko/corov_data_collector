@@ -5,9 +5,6 @@ import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
-data class Dummy(val value: String, @Id @GeneratedValue val id: Long? = null)
-
-@Entity
 data class DataPoint(
         val country: String,
         val provinceName: String,

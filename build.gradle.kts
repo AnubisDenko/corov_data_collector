@@ -37,7 +37,9 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.10.+")
+    implementation("org.jasypt:jasypt:1.9.3")
     implementation("org.postgresql:postgresql:42.2.5")
+    implementation("com.google.cloud:google-cloud-translate:1.94.2")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {

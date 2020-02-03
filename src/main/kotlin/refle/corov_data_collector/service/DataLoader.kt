@@ -11,7 +11,9 @@ import java.time.Instant
 import java.time.ZoneId
 
 @Component
-class DataLoader(@Autowired private val restTemplate: RestTemplate, @Autowired private val dataPointRepo: DataPointRepo) {
+class DataLoader(@Autowired private val restTemplate: RestTemplate,
+                 @Autowired private val dataPointRepo: DataPointRepo,
+                 @Autowired private val translator: Translator) {
     fun loadData() {
         val response = restTemplate.getForObject("/area", Response::class.java) ?: return
         if(!response.success)
@@ -20,13 +22,20 @@ class DataLoader(@Autowired private val restTemplate: RestTemplate, @Autowired p
         response.results.forEach { result ->
             with(result){
                 val citiesSet = cities?.map {
-                    City(it.cityName, it.confirmedCount, it.suspectedCount, it.curedCount, it.deadCount, it.locationId)
+                    City(translate(it.cityName), it.confirmedCount, it.suspectedCount, it.curedCount, it.deadCount, it.locationId)
                 }?.toSet() ?: setOf()
 
                 val updateTime = convertToDateTime(updateTime) ?: return@forEach
 
                 var dataPoint = DataPoint(
-                        country, provinceName, provinceShortName, confirmedCount, suspectedCount, curedCount, deadCount, comment,
+                        translate(country),
+                        translate(provinceName),
+                        translate(provinceShortName),
+                        confirmedCount,
+                        suspectedCount,
+                        curedCount,
+                        deadCount,
+                        comment,
                         updateTime,
                         convertToDateTime(createTime),
                         convertToDateTime(modifyTime),
@@ -44,5 +53,7 @@ class DataLoader(@Autowired private val restTemplate: RestTemplate, @Autowired p
         else
             Instant.ofEpochMilli(milli).atZone(ZoneId.systemDefault()).toLocalDateTime()
     }
+
+    private val translate = { chinese:String -> translator.translateChineseToEnglish(chinese)}
 
 }
