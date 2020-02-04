@@ -3,6 +3,7 @@ package refle.corov_data_collector.persistence
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 import refle.corov_data_collector.model.DataPoint
+import refle.corov_data_collector.model.ScheduledJobRun
 import refle.corov_data_collector.model.Translation
 import java.time.LocalDate
 
@@ -15,3 +16,6 @@ interface DataPointRepo: CrudRepository<DataPoint, Long>{
 interface TranslationRepo: CrudRepository<Translation, Long>{
     fun findByChinese(chinese: String): Translation?
 }
+
+@Repository
+interface ScheduledJobRepo: CrudRepository<ScheduledJobRun, Long>
