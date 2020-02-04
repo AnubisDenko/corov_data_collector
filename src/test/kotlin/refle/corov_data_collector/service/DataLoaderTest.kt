@@ -25,6 +25,7 @@ import java.net.URI
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.util.*
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -41,6 +42,7 @@ class DataLoaderTest{
     @Autowired private lateinit var sourceConfigParams: SourceConfigParams
 
     @Autowired private lateinit var dataPointRepo: DataPointRepo
+    @Autowired private lateinit var clock: TestClock
 
     private val mapper = Mappers.DEFAULT
     private lateinit var mockServer: MockRestServiceServer
@@ -48,7 +50,11 @@ class DataLoaderTest{
     @Before
     fun init(){
         mockServer = MockRestServiceServer.createServer(restTemplate)
+        clock.current = ZonedDateTime.of(2020, 1,10,10,10,10,0, ZoneId.of("Asia/Hong_Kong"))
+        dataPointRepo.deleteAll()
     }
+
+
 
     @Test
     fun `does try to load data`(){
@@ -87,14 +93,25 @@ class DataLoaderTest{
         assertTrue{ ausCities.isEmpty() }
     }
 
-    private fun expectSuccessfulCallAndReply(url: String,responseBody: String?){
+    @Test
+    fun `does clean data for current day before refetching`(){
+        val response = loadFixture("fixtures/sampleAreaResponse.json")
+        expectSuccessfulCallAndReply("${sourceConfigParams.baseUrl}area", response, ExpectedCount.twice())
+        dataLoader.loadData()
+        dataLoader.loadData()
+
+        val dataPoints = dataPointRepo.findAll().toList()
+        assertEquals(3, dataPoints.size)
+    }
+
+    private fun expectSuccessfulCallAndReply(url: String,responseBody: String?, times: ExpectedCount = ExpectedCount.once()){
         if(responseBody == null ){
-            mockServer.expect(ExpectedCount.once(),
+            mockServer.expect(times,
                     requestTo(URI(url)))
                     .andExpect(method(HttpMethod.GET))
                     .andRespond(withStatus(HttpStatus.OK))
         }else{
-            mockServer.expect(ExpectedCount.once(),
+            mockServer.expect(times,
                     requestTo(URI(url)))
                     .andExpect(method(HttpMethod.GET))
                     .andRespond(withStatus(HttpStatus.OK)

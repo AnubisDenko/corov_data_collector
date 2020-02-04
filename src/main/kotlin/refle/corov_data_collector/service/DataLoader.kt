@@ -10,16 +10,21 @@ import refle.corov_data_collector.model.DataPoint
 import refle.corov_data_collector.model.Response
 import refle.corov_data_collector.persistence.DataPointRepo
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import javax.transaction.Transactional
 
 @Component
 class DataLoader(@Autowired private val restTemplate: RestTemplate,
                  @Autowired private val dataPointRepo: DataPointRepo,
-                 @Autowired private val translator: Translator) {
+                 @Autowired private val translator: Translator,
+                 @Autowired private val clock: Clock) {
     private val logger = LoggerFactory.getLogger(this::class.java)
+
+    @Transactional
     fun loadData() {
-        val importTime = ZonedDateTime.now(ZoneId.of("Asia/Hong_Kong"))
+        val importDate = clock.getCurrentDateHK()
         val stopWatch = StopWatch()
         stopWatch.start()
         logger.info("Starting to load latest data")
@@ -27,10 +32,12 @@ class DataLoader(@Autowired private val restTemplate: RestTemplate,
         if(!response.success)
             return
 
+        cleanData(importDate)
+
         response.results.forEach { result ->
             with(result){
                 val citiesSet = cities?.map {
-                    City(translate(it.cityName), it.confirmedCount, it.suspectedCount, it.curedCount, it.deadCount, it.locationId, importTime)
+                    City(translate(it.cityName), it.confirmedCount, it.suspectedCount, it.curedCount, it.deadCount, it.locationId, importDate)
                 }?.toSet() ?: setOf()
 
                 val updateTime = convertToDateTime(updateTime) ?: return@forEach
@@ -44,7 +51,7 @@ class DataLoader(@Autowired private val restTemplate: RestTemplate,
                         curedCount,
                         deadCount,
                         translate(comment),
-                        importTime,
+                        importDate,
                         updateTime,
                         convertToDateTime(createTime),
                         convertToDateTime(modifyTime),
@@ -65,6 +72,8 @@ class DataLoader(@Autowired private val restTemplate: RestTemplate,
         else
             Instant.ofEpochMilli(milli).atZone(ZoneId.systemDefault()).toLocalDateTime()
     }
+
+    private val cleanData = { forDate: LocalDate -> dataPointRepo.deleteByImportDate(forDate)}
 
     private val translate = { chinese:String -> translator.translateChineseToEnglish(chinese)}
 
