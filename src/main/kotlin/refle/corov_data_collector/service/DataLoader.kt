@@ -10,7 +10,9 @@ import refle.corov_data_collector.model.DataPoint
 import refle.corov_data_collector.model.Response
 import refle.corov_data_collector.persistence.DataPointRepo
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZonedDateTime
 
 @Component
 class DataLoader(@Autowired private val restTemplate: RestTemplate,
@@ -18,6 +20,7 @@ class DataLoader(@Autowired private val restTemplate: RestTemplate,
                  @Autowired private val translator: Translator) {
     private val logger = LoggerFactory.getLogger(this::class.java)
     fun loadData() {
+        val importTime = ZonedDateTime.now(ZoneId.of("Asia/Hong_Kong"))
         val stopWatch = StopWatch()
         stopWatch.start()
         logger.info("Starting to load latest data")
@@ -28,7 +31,7 @@ class DataLoader(@Autowired private val restTemplate: RestTemplate,
         response.results.forEach { result ->
             with(result){
                 val citiesSet = cities?.map {
-                    City(translate(it.cityName), it.confirmedCount, it.suspectedCount, it.curedCount, it.deadCount, it.locationId)
+                    City(translate(it.cityName), it.confirmedCount, it.suspectedCount, it.curedCount, it.deadCount, it.locationId, importTime)
                 }?.toSet() ?: setOf()
 
                 val updateTime = convertToDateTime(updateTime) ?: return@forEach
@@ -42,6 +45,7 @@ class DataLoader(@Autowired private val restTemplate: RestTemplate,
                         curedCount,
                         deadCount,
                         translate(comment),
+                        importTime,
                         updateTime,
                         convertToDateTime(createTime),
                         convertToDateTime(modifyTime),

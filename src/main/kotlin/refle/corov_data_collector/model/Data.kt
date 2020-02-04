@@ -2,6 +2,7 @@ package refle.corov_data_collector.model
 
 import org.springframework.data.jpa.repository.Temporal
 import java.time.LocalDateTime
+import java.time.ZonedDateTime
 import javax.persistence.*
 
 @Entity
@@ -16,10 +17,14 @@ data class DataPoint(
         val comment: String,
 
         @Temporal(TemporalType.TIMESTAMP)
+        val importTime: ZonedDateTime,
+
+        @Temporal(TemporalType.TIMESTAMP)
         val updateTime: LocalDateTime,
 
         @Temporal(TemporalType.TIMESTAMP)
         @Column(nullable = true)
+
         val createTime: LocalDateTime?,
         @Temporal(TemporalType.TIMESTAMP)
         @Column(nullable = true)
@@ -47,6 +52,9 @@ data class City(
         val curedCount: Int,
         val deadCount: Int,
         val locationId: Int,
+
+        @Temporal(TemporalType.TIMESTAMP)
+        val importTime: ZonedDateTime,
 
         @Id @GeneratedValue
         val id: Long? = null
