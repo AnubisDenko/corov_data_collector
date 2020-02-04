@@ -1,12 +1,15 @@
 package refle.corov_data_collector.service
 
+import com.nhaarman.mockitokotlin2.mock
 import org.apache.commons.lang3.RandomStringUtils
 import org.apache.commons.text.RandomStringGenerator
 import org.jasypt.util.text.AES256TextEncryptor
 import org.junit.Ignore
 import org.junit.Test
+import org.mockito.Mockito.mock
 import org.springframework.util.ClassUtils
 import refle.corov_data_collector.config.AppConfig
+import refle.corov_data_collector.persistence.TranslationRepo
 import java.io.File
 import java.io.FileOutputStream
 import javax.crypto.Cipher
@@ -18,7 +21,8 @@ import kotlin.test.assertEquals
 
 class GoogleTranslatorTest{
     private val appConfig = AppConfig("TBC")
-    private val translator = GoogleTranslator(appConfig)
+    private val translationRepo: TranslationRepo = mock()
+    private val translator = GoogleTranslator(appConfig, translationRepo)
 
     @Test
     @Ignore

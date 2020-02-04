@@ -62,3 +62,11 @@ data class City(
         @ManyToOne
         lateinit var dataPoint: DataPoint
 }
+
+@Entity
+data class Translation(
+        val chinese: String,
+        val english: String,
+        @Id @GeneratedValue
+        val id: Long? = null
+)

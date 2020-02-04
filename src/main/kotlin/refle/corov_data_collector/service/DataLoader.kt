@@ -10,7 +10,6 @@ import refle.corov_data_collector.model.DataPoint
 import refle.corov_data_collector.model.Response
 import refle.corov_data_collector.persistence.DataPointRepo
 import java.time.Instant
-import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 

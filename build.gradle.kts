@@ -52,6 +52,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.testcontainers:postgresql:1.10.6")
     testImplementation("com.playtika.testcontainers:embedded-postgresql:1.38")
+    testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
 
 }
 
