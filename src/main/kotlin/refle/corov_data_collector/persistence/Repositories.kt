@@ -10,6 +10,7 @@ import java.time.LocalDate
 @Repository
 interface DataPointRepo: CrudRepository<DataPoint, Long>{
     fun deleteByImportDate(date: LocalDate): Long
+    fun findByImportDate(date:LocalDate): List<DataPoint>
 }
 
 @Repository

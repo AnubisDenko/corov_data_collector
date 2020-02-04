@@ -17,6 +17,7 @@ import org.springframework.test.web.client.match.MockRestRequestMatchers.method
 import org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo
 import org.springframework.test.web.client.response.MockRestResponseCreators.withStatus
 import org.springframework.web.client.RestTemplate
+import refle.corov_data_collector.BaseSpringAcceptanceTest
 import refle.corov_data_collector.Mappers
 import refle.corov_data_collector.config.SourceConfigParams
 import refle.corov_data_collector.loadFixture
@@ -33,10 +34,7 @@ import kotlin.test.assertTrue
 import kotlin.test.fail
 
 
-@RunWith(SpringRunner::class)
-@SpringBootTest
-@ActiveProfiles("test")
-class DataLoaderTest{
+class DataLoaderAcceptanceTest: BaseSpringAcceptanceTest(){
     @Autowired private lateinit var restTemplate: RestTemplate
     @Autowired private lateinit var dataLoader: DataLoader
     @Autowired private lateinit var sourceConfigParams: SourceConfigParams
