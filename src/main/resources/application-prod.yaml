@@ -12,8 +12,4 @@ spring:
 source:
   baseUrl: https://lab.isaaclin.cn/nCoV/api/
 
-management:
-  endpoint:
-    scheduledtasks:
-      enabled: true
 

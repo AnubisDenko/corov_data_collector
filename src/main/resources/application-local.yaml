@@ -1,18 +1,17 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://localhost:5433/postgres
+    username: postgres
+    password: mysecretpassword
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-  quartz:
-    job-store-type: memory
 
-app:
-  passphrase: ${PASSPHRASE}
+
+source:
+  baseUrl: https://lab.isaaclin.cn/nCoV/api/
 
 management:
   endpoint:
