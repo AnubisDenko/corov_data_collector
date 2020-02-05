@@ -41,6 +41,7 @@ dependencies {
     implementation("org.jasypt:jasypt:1.9.3")
     implementation("org.postgresql:postgresql:42.2.5")
     implementation("com.google.cloud:google-cloud-translate:1.94.2")
+    implementation("io.sentry:sentry-spring:1.7.27")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
