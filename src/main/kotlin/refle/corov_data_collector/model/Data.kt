@@ -1,5 +1,6 @@
 package refle.corov_data_collector.model
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import org.springframework.data.jpa.repository.Temporal
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -61,6 +62,7 @@ data class City(
         val id: Long? = null
 ){
         @ManyToOne
+        @JsonIgnore
         lateinit var dataPoint: DataPoint
 }
 

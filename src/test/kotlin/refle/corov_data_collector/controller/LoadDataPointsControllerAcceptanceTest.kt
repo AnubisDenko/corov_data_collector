@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import refle.corov_data_collector.BaseSpringAcceptanceTest
+import refle.corov_data_collector.model.City
 import refle.corov_data_collector.model.DataPoint
 import refle.corov_data_collector.persistence.DataPointRepo
 import refle.corov_data_collector.service.TestClock
@@ -30,8 +31,7 @@ class LoadDataPointsControllerAcceptanceTest: BaseSpringAcceptanceTest(){
     @Test
     fun `can load latest datapoints`(){
         setupDataPointsFor(clock.getCurrentDateHK(), 100)
-        val result = mockMvc.get("/loadLatestDataPoints").andReturn()
-        val body = result.response.contentAsString
+        val body = fetchFromController()
         val dataPoints = mapper.readValue<List<DataPoint>>(body)
         assertEquals(2, dataPoints.size)
     }
@@ -40,8 +40,7 @@ class LoadDataPointsControllerAcceptanceTest: BaseSpringAcceptanceTest(){
     fun `only returns datapoints on the correct date`(){
         setupDataPointsFor(clock.getCurrentDateHK(), 100)
         setupDataPointsFor(clock.getCurrentDateHK().minusDays(1), 300)
-        val result = mockMvc.get("/loadLatestDataPoints").andReturn()
-        val body = result.response.contentAsString
+        val body = fetchFromController()
         val dataPoints = mapper.readValue<List<DataPoint>>(body)
 
         assertEquals(2, dataPoints.size)
@@ -53,8 +52,7 @@ class LoadDataPointsControllerAcceptanceTest: BaseSpringAcceptanceTest(){
         setupDataPointsFor(clock.getCurrentDateHK(), 100)
         setupDataPointsFor(clock.getCurrentDateHK().minusDays(1), 300)
 
-        val result = mockMvc.get("/loadLatestDataPoints?date=${clock.getCurrentDateHK().minusDays(1).toString("yyyy-MM-dd")}").andReturn()
-        val body = result.response.contentAsString
+        val body = fetchFromController("/loadLatestDataPoints?date=${clock.getCurrentDateHK().minusDays(1).toString("yyyy-MM-dd")}")
         val dataPoints = mapper.readValue<List<DataPoint>>(body)
 
         assertEquals(2, dataPoints.size)
@@ -64,12 +62,47 @@ class LoadDataPointsControllerAcceptanceTest: BaseSpringAcceptanceTest(){
     @Test
     fun `searches back in time to find the latest dataset if no date provided`(){
         setupDataPointsFor(clock.getCurrentDateHK().minusDays(1), 300)
-        val result = mockMvc.get("/loadLatestDataPoints").andReturn()
-        val body = result.response.contentAsString
+        val body = fetchFromController()
         val dataPoints = mapper.readValue<List<DataPoint>>(body)
 
         assertEquals(2, dataPoints.size)
         assertEquals(300, dataPoints.first().confirmedCount)
+    }
+
+    @Test
+    fun `can send back a datapoint with underlying cities`(){
+        setupDataPointWithCity(clock.getCurrentDateHK(), 200)
+        val body = fetchFromController()
+        val dataPoints = mapper.readValue<List<DataPoint>>(body)
+
+        assertEquals(1, dataPoints.size)
+        assertEquals(2, dataPoints.first().cities.size)
+    }
+
+    private fun fetchFromController(url: String = "/loadLatestDataPoints"): String{
+        val result = mockMvc.get(url).andReturn()
+        return result.response.contentAsString
+    }
+
+    private fun setupDataPointWithCity(date:LocalDate, confirmedCount: Int): Long? {
+        val cities = setOf(
+                City("City 1", confirmedCount / 2, 0,0,0,0,date),
+                City("City 2", confirmedCount / 2, 0,0,0,0,date)
+        )
+
+        val dataPoint = DataPoint(
+                "OtherDummy",
+                "OtherProvince",
+                "AlsoShortname",
+                confirmedCount,
+                0,0,0,"",date,
+                clock.getCurrentDatetimeHK().toLocalDateTime(),
+                null,
+                null, cities
+        )
+
+        cities.forEach { it.dataPoint = dataPoint }
+        return dataPointRepo.save(dataPoint).id
     }
 
     private fun setupDataPointsFor(date:LocalDate, confirmedCount: Int): List<Long?> {
