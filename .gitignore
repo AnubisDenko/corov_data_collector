@@ -34,3 +34,7 @@ out/
 **/*/google-translate.json
 .DS*
 ../DS_Store
+
+*/.empty
+*/.ipynb_checkpoints
+*/__pycache__
