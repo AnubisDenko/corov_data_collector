@@ -102,6 +102,20 @@ class DataLoaderAcceptanceTest: BaseSpringAcceptanceTest(){
         assertEquals(3, dataPoints.size)
     }
 
+    @Test
+    fun `maps country for Hong Kong and Macao from China to City`(){
+        val response = loadFixture("fixtures/hong_kong_and_macau_response.json")
+        expectSuccessfulCallAndReply("${sourceConfigParams.baseUrl}area", response)
+        dataLoader.loadData()
+
+        val dataPoints = dataPointRepo.findAll().toList()
+        val hongkong = dataPoints.find { it.provinceName == "Hong Kong" } ?: fail("Hong Kong not found")
+        assertEquals("Hong Kong", hongkong.country)
+
+        val macao = dataPoints.find { it.provinceName == "Macao" } ?: fail("Macao not found")
+        assertEquals("Macao", macao.country)
+    }
+
     private fun expectSuccessfulCallAndReply(url: String,responseBody: String?, times: ExpectedCount = ExpectedCount.once()){
         if(responseBody == null ){
             mockServer.expect(times,

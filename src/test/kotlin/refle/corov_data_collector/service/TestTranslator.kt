@@ -12,7 +12,9 @@ class TestTranslator: Translator {
             "中国" to "China",
             "湖南省" to "Hunan Province",
             "湖南" to "Hunan",
-            "长沙" to "Changsha"
+            "长沙" to "Changsha",
+            "香港" to "Hong Kong",
+            "澳门" to "Macao"
     )
     override fun translateChineseToEnglish(chinese: String): String {
         return if(dictionary.containsKey(chinese)){

@@ -42,9 +42,15 @@ class DataLoader(@Autowired private val restTemplate: RestTemplate,
 
                 val updateTime = convertToDateTime(updateTime) ?: return@forEach
 
+                val provinceName = translate(provinceName)
+                val fixedCountry = if(provinceName == "Macao" || provinceName == "Hong Kong"){
+                    provinceName
+                }else{
+                    translate(country)
+                }
                 var dataPoint = DataPoint(
-                        translate(country),
-                        translate(provinceName),
+                        fixedCountry,
+                        provinceName,
                         translate(provinceShortName),
                         confirmedCount,
                         suspectedCount,
