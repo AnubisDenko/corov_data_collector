@@ -1,0 +1,44 @@
+# This file was generated based on ".graphqlconfig". Do not edit manually.
+
+schema {
+  query: Query
+}
+
+type CountryData {
+  confirmedCount: Int
+  country: String
+  curedCount: Int
+  deadCount: Int
+  importDate: String
+  suspectedCount: Int
+}
+
+type ProvinceData {
+  importDate: String
+  country: String
+  provinceName: String
+  provinceShortName: String
+  confirmedCount: Int
+  curedCount: Int
+  suspectedCount: Int
+  deadCount: Int
+}
+
+type CityData {
+  importDate: String
+  country: String
+  provinceName: String
+  provinceShortName: String
+  city: String
+  confirmedCount: Int
+  curedCount: Int
+  suspectedCount: Int
+  locationId: Int
+  deadCount: Int
+}
+
+type Query {
+  statsByCountry(date: String): [CountryData!]
+  statsByProvince(date: String, country: String): [ProvinceData]
+  provinceDetails(country: String, provinceName: String, date: String): [CityData]
+}

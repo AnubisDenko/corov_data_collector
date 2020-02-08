@@ -14,7 +14,7 @@ interface DataPointRepo: CrudRepository<DataPoint, Long>{
     fun deleteByImportDate(date: LocalDate): Long
     fun findByImportDate(date:LocalDate): List<DataPoint>
     fun findByImportDateAndCountry(date:LocalDate, country:String): List<DataPoint>
-    fun findByImportDateAndCountryAndProvinceName(date:LocalDate, country:String, provinceName: String): List<DataPoint>
+    fun findByImportDateAndCountryAndProvinceShortName(date:LocalDate, country:String, provinceShortName: String): List<DataPoint>
 }
 
 @Repository
