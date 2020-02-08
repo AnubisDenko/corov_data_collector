@@ -42,3 +42,8 @@ type Query {
   statsByProvince(date: String, country: String): [ProvinceData]
   provinceDetails(country: String, provinceName: String, date: String): [CityData]
 }
+
+
+type Mutation {
+  loadLatestVirusData: Boolean
+}
