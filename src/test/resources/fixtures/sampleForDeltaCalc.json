@@ -12,7 +12,7 @@
         {
           "cityName": "长沙",
           "confirmedCount": 112,
-          "suspectedCount": 0,
+          "suspectedCount": 5,
           "curedCount": 2,
           "deadCount": 10,
           "locationId": 430100

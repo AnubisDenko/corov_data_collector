@@ -17,6 +17,7 @@ import refle.corov_data_collector.BaseSpringAcceptanceTest
 import refle.corov_data_collector.Mappers
 import refle.corov_data_collector.config.SourceConfigParams
 import refle.corov_data_collector.loadFixture
+import refle.corov_data_collector.model.City
 import refle.corov_data_collector.persistence.DataPointRepo
 import refle.corov_data_collector.setupDataPointWithCity
 import java.net.URI
@@ -114,7 +115,7 @@ class DataLoaderAcceptanceTest: BaseSpringAcceptanceTest(){
 
     @Test
     fun `calculates the delta for loaded datapoint compared to previous day`(){
-        setupDataPointWithCityAndSave("China", "Hunan",clock.getCurrentDateHK().minusDays(1),363, 0,6,5)
+        setupDataPointWithCityAndSave("China", "Hunan",clock.getCurrentDateHK().minusDays(1),363, 0,6,5, setOf())
         val response = loadFixture("fixtures/sampleForDeltaCalc.json")
         expectSuccessfulCallAndReply("${sourceConfigParams.baseUrl}area", response)
 
@@ -130,9 +131,46 @@ class DataLoaderAcceptanceTest: BaseSpringAcceptanceTest(){
         }
     }
 
-    private val setupDataPointWithCityAndSave = { country: String, province: String, date: LocalDate, confirmedCount: Int, suspectedCount: Int , curedCount: Int, deadCount: Int ->
-        val dataPoint = setupDataPointWithCity(country, province, date, confirmedCount, suspectedCount, curedCount, deadCount)
-        dataPointRepo.save(dataPoint).id
+    @Test
+    fun `calculates the delta for cities compared to previous day`(){
+        val changsha = City("Changsha", 100, 0,0,5,430100, clock.getCurrentDateHK().minusDays(1))
+        setupDataPointWithCityAndSave("China", "Hunan",clock.getCurrentDateHK().minusDays(1),363, 0,6,5, setOf(changsha) )
+
+        val response = loadFixture("fixtures/sampleForDeltaCalc.json")
+        expectSuccessfulCallAndReply("${sourceConfigParams.baseUrl}area", response)
+
+        dataLoader.loadData()
+
+        val changshaCreated = dataPointRepo.findByImportDate(clock.getCurrentDateHK()).first().cities.find { it.cityName == "Changsha" } ?: fail("Test city not found")
+
+        with(changshaCreated) {
+            assertEquals(12, confirmedDelta)
+            assertEquals(5, suspectedDelta)
+            assertEquals(2, curedDelta)
+            assertEquals(5, deadDelta)
+        }
+    }
+
+    @Test
+    fun `if no previous day found we will use count as delta`(){
+        val response = loadFixture("fixtures/sampleForDeltaCalc.json")
+        expectSuccessfulCallAndReply("${sourceConfigParams.baseUrl}area", response)
+
+        dataLoader.loadData()
+
+        val changshaCreated = dataPointRepo.findByImportDate(clock.getCurrentDateHK()).first().cities.find { it.cityName == "Changsha" } ?: fail("Test city not found")
+
+        with(changshaCreated) {
+            assertEquals(112, confirmedDelta)
+            assertEquals(5, suspectedDelta)
+            assertEquals(2, curedDelta)
+            assertEquals(10, deadDelta)
+        }
+    }
+
+    private val setupDataPointWithCityAndSave = { country: String, province: String, date: LocalDate, confirmedCount: Int, suspectedCount: Int , curedCount: Int, deadCount: Int, cities: Set<City> ->
+        val dataPoint = setupDataPointWithCity(country, province, date, confirmedCount, suspectedCount, curedCount, deadCount, cities)
+        dataPointRepo.save(dataPoint)
     }
 
     private fun expectSuccessfulCallAndReply(url: String,responseBody: String?, times: ExpectedCount = ExpectedCount.once()){

@@ -17,8 +17,8 @@ fun LocalDate.toString(pattern: String): String {
     return this.format(formatter)
 }
 
-fun setupDataPointWithCity(country: String, province: String, date: LocalDate, confirmedCount: Int, suspectedCount: Int = 0, curedCount: Int = 0, deadCount: Int = 0): DataPoint {
-    val cities = setOf(
+fun setupDataPointWithCity(country: String, province: String, date: LocalDate, confirmedCount: Int, suspectedCount: Int = 0, curedCount: Int = 0, deadCount: Int = 0, cities: Set<City>? = null): DataPoint {
+    val testCities = cities ?: setOf(
             City("${country}_${province}_City1", confirmedCount / 2, 0, 0, 0, 0, date),
             City("${country}_${province}_City2", confirmedCount / 2, 0, 0, 0, 0, date)
     )
@@ -35,9 +35,9 @@ fun setupDataPointWithCity(country: String, province: String, date: LocalDate, c
             date,
             LocalDateTime.now(),
             null,
-            null, cities
+            null, testCities
     )
 
-    cities.forEach { it.dataPoint = dataPoint }
+    testCities.forEach { it.dataPoint = dataPoint }
     return dataPoint
 }

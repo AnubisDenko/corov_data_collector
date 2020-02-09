@@ -43,9 +43,20 @@ class DataLoader(@Autowired private val restTemplate: RestTemplate,
 
                     val previousDay = dataPointRepo.findByImportDateAndCountryAndProvinceShortName(importDate.minusDays(1), translatedCountry, translatedProvinceShortName)
 
-
                     val citiesSet = cities?.map {
-                        City(translate(it.cityName), it.confirmedCount, it.suspectedCount, it.curedCount, it.deadCount, it.locationId, importDate)
+                        val translatedCityName = translate(it.cityName)
+                        val previousDayCityData = previousDay?.cities?.find { it.cityName == translatedCityName }
+
+                        if(previousDayCityData == null ) {
+                            City(translate(it.cityName), it.confirmedCount, it.suspectedCount, it.curedCount, it.deadCount, it.locationId, importDate,
+                                    confirmedDelta = it.confirmedCount, suspectedDelta = it.suspectedCount, curedDelta = it.curedCount, deadDelta = it.deadCount)
+                        }else{
+                            City(translate(it.cityName), it.confirmedCount, it.suspectedCount, it.curedCount, it.deadCount, it.locationId, importDate,
+                                    confirmedDelta = it.confirmedCount - previousDayCityData.confirmedCount,
+                                    suspectedDelta = it.suspectedCount - previousDayCityData.suspectedCount,
+                                    curedDelta = it.curedCount - previousDayCityData.curedCount,
+                                    deadDelta = it.deadCount - previousDayCityData.deadCount)
+                        }
                     }?.toSet() ?: setOf()
 
                     val updateTime = convertToDateTime(updateTime) ?: return@forEach
