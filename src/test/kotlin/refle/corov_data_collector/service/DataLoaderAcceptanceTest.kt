@@ -3,14 +3,10 @@ package refle.corov_data_collector.service
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.client.ExpectedCount
 import org.springframework.test.web.client.MockRestServiceServer
 import org.springframework.test.web.client.match.MockRestRequestMatchers.method
@@ -22,12 +18,12 @@ import refle.corov_data_collector.Mappers
 import refle.corov_data_collector.config.SourceConfigParams
 import refle.corov_data_collector.loadFixture
 import refle.corov_data_collector.persistence.DataPointRepo
+import refle.corov_data_collector.setupDataPointWithCity
 import java.net.URI
 import java.time.Instant
-import java.time.LocalDateTime
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.util.*
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -114,6 +110,16 @@ class DataLoaderAcceptanceTest: BaseSpringAcceptanceTest(){
 
         val macao = dataPoints.find { it.provinceName == "Macao" } ?: fail("Macao not found")
         assertEquals("Macao", macao.country)
+    }
+
+    @Test
+    fun `calculates the delta for loaded datapoint compared to previous day`(){
+        setupDataPointWithCity("China", "Shandong",clock.getCurrentDateHK().minusDays(1),100)
+    }
+
+    private val setupDataPointWithCityAndSave = { country: String, province: String, date: LocalDate, confirmedCount: Int ->
+        val dataPoint = setupDataPointWithCity(country, province, date, confirmedCount)
+        dataPointRepo.save(dataPoint).id
     }
 
     private fun expectSuccessfulCallAndReply(url: String,responseBody: String?, times: ExpectedCount = ExpectedCount.once()){

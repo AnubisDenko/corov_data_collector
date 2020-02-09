@@ -24,52 +24,56 @@ class DataLoader(@Autowired private val restTemplate: RestTemplate,
 
     @Transactional
     fun loadData() {
-        val importDate = clock.getCurrentDateHK()
-        val stopWatch = StopWatch()
-        stopWatch.start()
-        logger.info("Starting to load latest data")
-        val response = restTemplate.getForObject("/area", Response::class.java) ?: return
-        if(!response.success)
-            return
+        try {
+            val importDate = clock.getCurrentDateHK()
+            val stopWatch = StopWatch()
+            stopWatch.start()
+            logger.info("Starting to load latest data")
+            val response = restTemplate.getForObject("/area", Response::class.java) ?: return
+            if (!response.success)
+                return
 
-        cleanData(importDate)
+            cleanData(importDate)
 
-        response.results.forEach { result ->
-            with(result){
-                val citiesSet = cities?.map {
-                    City(translate(it.cityName), it.confirmedCount, it.suspectedCount, it.curedCount, it.deadCount, it.locationId, importDate)
-                }?.toSet() ?: setOf()
+            response.results.forEach { result ->
+                with(result) {
+                    val citiesSet = cities?.map {
+                        City(translate(it.cityName), it.confirmedCount, it.suspectedCount, it.curedCount, it.deadCount, it.locationId, importDate)
+                    }?.toSet() ?: setOf()
 
-                val updateTime = convertToDateTime(updateTime) ?: return@forEach
+                    val updateTime = convertToDateTime(updateTime) ?: return@forEach
 
-                val provinceName = translate(provinceName)
-                val fixedCountry = if(provinceName == "Macao" || provinceName == "Hong Kong"){
-                    provinceName
-                }else{
-                    translate(country)
+                    val provinceName = translate(provinceName)
+                    val fixedCountry = if (provinceName == "Macao" || provinceName == "Hong Kong") {
+                        provinceName
+                    } else {
+                        translate(country)
+                    }
+                    var dataPoint = DataPoint(
+                            fixedCountry,
+                            provinceName,
+                            translate(provinceShortName),
+                            confirmedCount,
+                            suspectedCount,
+                            curedCount,
+                            deadCount,
+                            translate(comment),
+                            importDate,
+                            updateTime,
+                            convertToDateTime(createTime),
+                            convertToDateTime(modifyTime),
+                            citiesSet
+                    )
+
+                    citiesSet.forEach { it.dataPoint = dataPoint }
+                    dataPointRepo.save(dataPoint)
                 }
-                var dataPoint = DataPoint(
-                        fixedCountry,
-                        provinceName,
-                        translate(provinceShortName),
-                        confirmedCount,
-                        suspectedCount,
-                        curedCount,
-                        deadCount,
-                        translate(comment),
-                        importDate,
-                        updateTime,
-                        convertToDateTime(createTime),
-                        convertToDateTime(modifyTime),
-                        citiesSet
-                )
-
-                citiesSet.forEach { it.dataPoint = dataPoint }
-                dataPointRepo.save(dataPoint)
             }
+            stopWatch.stop()
+            logger.info("Load completed and took ${stopWatch.totalTimeSeconds}s")
+        }catch( e: Exception){
+            logger.error("Error while loading latest data therefore skipping: ${e.message}", e)
         }
-        stopWatch.stop()
-        logger.info("Load completed and took ${stopWatch.totalTimeSeconds}s")
     }
 
     private val convertToDateTime = { milli:Long ->
