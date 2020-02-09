@@ -37,6 +37,13 @@ class DataLoader(@Autowired private val restTemplate: RestTemplate,
 
             response.results.forEach { result ->
                 with(result) {
+
+                    val translatedCountry = translate(result.country)
+                    val translatedProvinceShortName = translate(result.provinceShortName)
+
+                    val previousDay = dataPointRepo.findByImportDateAndCountryAndProvinceShortName(importDate.minusDays(1), translatedCountry, translatedProvinceShortName)
+
+
                     val citiesSet = cities?.map {
                         City(translate(it.cityName), it.confirmedCount, it.suspectedCount, it.curedCount, it.deadCount, it.locationId, importDate)
                     }?.toSet() ?: setOf()
@@ -47,12 +54,12 @@ class DataLoader(@Autowired private val restTemplate: RestTemplate,
                     val fixedCountry = if (provinceName == "Macao" || provinceName == "Hong Kong") {
                         provinceName
                     } else {
-                        translate(country)
+                        translatedCountry
                     }
                     var dataPoint = DataPoint(
                             fixedCountry,
                             provinceName,
-                            translate(provinceShortName),
+                            translatedProvinceShortName,
                             confirmedCount,
                             suspectedCount,
                             curedCount,
@@ -62,7 +69,11 @@ class DataLoader(@Autowired private val restTemplate: RestTemplate,
                             updateTime,
                             convertToDateTime(createTime),
                             convertToDateTime(modifyTime),
-                            citiesSet
+                            citiesSet,
+                            confirmedDelta = confirmedCount - ( previousDay?.confirmedCount ?: 0),
+                            suspectedDelta = suspectedCount - ( previousDay?.suspectedCount ?: 0) ,
+                            deadDelta = deadCount - ( previousDay?.deadCount ?: 0),
+                            curedDelta = curedCount - ( previousDay?.curedCount ?: 0)
                     )
 
                     citiesSet.forEach { it.dataPoint = dataPoint }

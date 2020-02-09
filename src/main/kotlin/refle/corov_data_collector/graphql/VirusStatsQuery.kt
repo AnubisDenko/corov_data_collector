@@ -52,7 +52,7 @@ class VirusStatsQuery(@Autowired private val dataLoader: DataLoader, @Autowired 
             searchDate = searchDate.minusDays(it.toLong())
 
             // for now I assume there is only one data point
-            val result = dataPointRepo.findByImportDateAndCountryAndProvinceShortName(searchDate, country, provinceName).firstOrNull() ?: return emptyList()
+            val result = dataPointRepo.findByImportDateAndCountryAndProvinceShortName(searchDate, country, provinceName) ?: return emptyList()
             return result.cities.map { city ->  CityData(result.importDate, result.country, result.provinceName, result.provinceShortName, city.cityName, city.confirmedCount, city.curedCount, city.suspectedCount, city.locationId, city.deadCount) }
         }
 

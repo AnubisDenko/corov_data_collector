@@ -16,6 +16,7 @@ data class DataPoint(
         val suspectedCount: Int,
         val curedCount: Int,
         val deadCount: Int,
+
         val comment: String,
 
         @Temporal(TemporalType.DATE)
@@ -43,7 +44,12 @@ data class DataPoint(
         @Id
         @GeneratedValue
         @Column(name = "data_id")
-        val id: Long? = null
+        val id: Long? = null,
+
+        val confirmedDelta: Int = 0,
+        val suspectedDelta: Int = 0,
+        val curedDelta: Int = 0,
+        val deadDelta: Int = 0
 )
 
 @Entity
@@ -53,17 +59,24 @@ data class City(
         val suspectedCount: Int,
         val curedCount: Int,
         val deadCount: Int,
+
         val locationId: Int,
 
         @Temporal(TemporalType.DATE)
         val importDate: LocalDate,
 
         @Id @GeneratedValue
-        val id: Long? = null
+        val id: Long? = null,
+
+        val confirmedDelta: Int = 0,
+        val suspectedDelta: Int = 0,
+        val curedDelta: Int = 0,
+        val deadDelta: Int = 0
 ){
         @ManyToOne
         @JsonIgnore
         lateinit var dataPoint: DataPoint
+
 }
 
 @Entity

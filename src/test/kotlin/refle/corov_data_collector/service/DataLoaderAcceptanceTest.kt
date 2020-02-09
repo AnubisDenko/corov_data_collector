@@ -114,11 +114,24 @@ class DataLoaderAcceptanceTest: BaseSpringAcceptanceTest(){
 
     @Test
     fun `calculates the delta for loaded datapoint compared to previous day`(){
-        setupDataPointWithCity("China", "Shandong",clock.getCurrentDateHK().minusDays(1),100)
+        setupDataPointWithCityAndSave("China", "Hunan",clock.getCurrentDateHK().minusDays(1),363, 0,6,5)
+        val response = loadFixture("fixtures/sampleForDeltaCalc.json")
+        expectSuccessfulCallAndReply("${sourceConfigParams.baseUrl}area", response)
+
+        dataLoader.loadData()
+
+        val hunanToday = dataPointRepo.findByImportDate(clock.getCurrentDateHK()).first()
+
+        with(hunanToday) {
+            assertEquals(100, confirmedDelta)
+            assertEquals(5, suspectedDelta)
+            assertEquals(5, curedDelta)
+            assertEquals(15, deadDelta)
+        }
     }
 
-    private val setupDataPointWithCityAndSave = { country: String, province: String, date: LocalDate, confirmedCount: Int ->
-        val dataPoint = setupDataPointWithCity(country, province, date, confirmedCount)
+    private val setupDataPointWithCityAndSave = { country: String, province: String, date: LocalDate, confirmedCount: Int, suspectedCount: Int , curedCount: Int, deadCount: Int ->
+        val dataPoint = setupDataPointWithCity(country, province, date, confirmedCount, suspectedCount, curedCount, deadCount)
         dataPointRepo.save(dataPoint).id
     }
 

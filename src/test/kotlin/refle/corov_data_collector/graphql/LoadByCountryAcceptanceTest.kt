@@ -79,7 +79,9 @@ class LoadByCountryAcceptanceTest() : BaseSpringAcceptanceTest() {
                 "${country1Name}1",
                 "Shortname",
                 country1ConfirmedCount,
-                0, 0, 0, "", date,
+                0, 0, 0,
+                "",
+                date,
                 clock.getCurrentDatetimeHK().toLocalDateTime(),
                 null,
                 null, setOf()
@@ -90,7 +92,8 @@ class LoadByCountryAcceptanceTest() : BaseSpringAcceptanceTest() {
                 "${country1Name}2",
                 "AlsoShortname",
                 country1ConfirmedCount,
-                0, 0, 0, "", date,
+                0, 0, 0,
+                "", date,
                 clock.getCurrentDatetimeHK().toLocalDateTime(),
                 null,
                 null, setOf()
@@ -101,7 +104,8 @@ class LoadByCountryAcceptanceTest() : BaseSpringAcceptanceTest() {
                 "${country2Name}1",
                 "Shortname",
                 country2ConfirmedCount,
-                0, 0, 0, "", date,
+                0, 0, 0,
+                "", date,
                 clock.getCurrentDatetimeHK().toLocalDateTime(),
                 null,
                 null, setOf()
@@ -112,7 +116,8 @@ class LoadByCountryAcceptanceTest() : BaseSpringAcceptanceTest() {
                 "${country2Name}2",
                 "AlsoShortname",
                 country2ConfirmedCount,
-                0, 0, 0, "", date,
+                0, 0, 0,
+                "", date,
                 clock.getCurrentDatetimeHK().toLocalDateTime(),
                 null,
                 null, setOf()

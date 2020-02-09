@@ -1,12 +1,8 @@
 package refle.corov_data_collector
 
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Profile
-import org.springframework.stereotype.Component
 import org.springframework.util.ClassUtils
 import refle.corov_data_collector.model.City
 import refle.corov_data_collector.model.DataPoint
-import refle.corov_data_collector.service.TestClock
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -21,7 +17,7 @@ fun LocalDate.toString(pattern: String): String {
     return this.format(formatter)
 }
 
-fun setupDataPointWithCity(country: String, province: String, date: LocalDate, confirmedCount: Int): DataPoint {
+fun setupDataPointWithCity(country: String, province: String, date: LocalDate, confirmedCount: Int, suspectedCount: Int = 0, curedCount: Int = 0, deadCount: Int = 0): DataPoint {
     val cities = setOf(
             City("${country}_${province}_City1", confirmedCount / 2, 0, 0, 0, 0, date),
             City("${country}_${province}_City2", confirmedCount / 2, 0, 0, 0, 0, date)
@@ -32,7 +28,10 @@ fun setupDataPointWithCity(country: String, province: String, date: LocalDate, c
             "${province}_long",
             province,
             confirmedCount,
-            0, 0, 0, "",
+            suspectedCount,
+            curedCount,
+            deadCount,
+            "",
             date,
             LocalDateTime.now(),
             null,
