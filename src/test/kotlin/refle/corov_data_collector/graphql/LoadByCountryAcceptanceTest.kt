@@ -5,7 +5,7 @@ import org.junit.Before
 import org.junit.Test
 import org.springframework.beans.factory.annotation.Autowired
 import refle.corov_data_collector.BaseSpringAcceptanceTest
-import refle.corov_data_collector.model.City
+import refle.corov_data_collector.setupDataPointWithCity
 import refle.corov_data_collector.model.DataPoint
 import refle.corov_data_collector.persistence.DataPointRepo
 import refle.corov_data_collector.service.TestClock
@@ -18,16 +18,20 @@ import kotlin.test.fail
 /**
  * TODO at the moment this test ignores the graphql layer as I didn't get it to work. This needs to be fixed!!
  */
-class LoadByCountryAcceptanceTest(): BaseSpringAcceptanceTest() {
-    @Autowired private lateinit var dataPointRepo: DataPointRepo
-    @Autowired private lateinit var clock: TestClock
+class LoadByCountryAcceptanceTest() : BaseSpringAcceptanceTest() {
+    @Autowired
+    private lateinit var dataPointRepo: DataPointRepo
+    @Autowired
+    private lateinit var clock: TestClock
 
-    @Autowired private lateinit var mapper: ObjectMapper
+    @Autowired
+    private lateinit var mapper: ObjectMapper
 
-    @Autowired private lateinit var virusStatsQuery: VirusStatsQuery
+    @Autowired
+    private lateinit var virusStatsQuery: VirusStatsQuery
 
     @Before
-    fun setup(){
+    fun setup() {
         dataPointRepo.deleteAll()
     }
 
@@ -46,7 +50,7 @@ class LoadByCountryAcceptanceTest(): BaseSpringAcceptanceTest() {
     }
 
     @Test
-    fun `provides provinces details for country`(){
+    fun `provides provinces details for country`() {
         setupDataPointsForTwoCountries(clock.getCurrentDateHK(), "China", 600, "Germany", 100)
         val result = virusStatsQuery.getStatsByProvince(getTodayAsString(), "China")
         assertEquals(2, result.size)
@@ -55,45 +59,29 @@ class LoadByCountryAcceptanceTest(): BaseSpringAcceptanceTest() {
     }
 
     @Test
-    fun `provides city details for country and province`(){
-        setupDataPointWithCity("China","Shandong", clock.getCurrentDateHK(), 100)
-        setupDataPointWithCity("China","Hunan", clock.getCurrentDateHK(), 300)
-        setupDataPointWithCity("Germany","Bavaria", clock.getCurrentDateHK(), 400)
+    fun `provides city details for country and province`() {
+        val dataPoints = listOf(
+                setupDataPointWithCity("China", "Shandong", clock.getCurrentDateHK(), 100),
+                setupDataPointWithCity("China", "Hunan", clock.getCurrentDateHK(), 300),
+                setupDataPointWithCity("Germany", "Bavaria", clock.getCurrentDateHK(), 400)
+        )
+        dataPointRepo.saveAll(dataPoints)
 
-        val result = virusStatsQuery.getProvinceDetails("China","Shandong",getTodayAsString())
+        val result = virusStatsQuery.getProvinceDetails("China", "Shandong", getTodayAsString())
         assertNotNull(result.find { it.city == "China_Shandong_City1" })
         assertNotNull(result.find { it.city == "China_Shandong_City2" })
     }
 
-    private fun setupDataPointWithCity(country: String, province: String, date:LocalDate, confirmedCount: Int): Long? {
-        val cities = setOf(
-                City("${country}_${province}_City1", confirmedCount / 2, 0,0,0,0,date),
-                City("${country}_${province}_City2", confirmedCount / 2, 0,0,0,0,date)
-        )
-
-        val dataPoint = DataPoint(
-                country,
-                province,
-                "${province}_short",
-                confirmedCount,
-                0,0,0,"",date,
-                clock.getCurrentDatetimeHK().toLocalDateTime(),
-                null,
-                null, cities
-        )
-
-        cities.forEach { it.dataPoint = dataPoint }
-        return dataPointRepo.save(dataPoint).id
-    }
-
     private val getTodayAsString = { clock.getCurrentDateHK().toString("yyyy-MM-dd") }
-    private fun setupDataPointsForTwoCountries(date: LocalDate, country1Name: String, country1ConfirmedCount: Int, country2Name: String, country2ConfirmedCount: Int){
+    private fun setupDataPointsForTwoCountries(date: LocalDate, country1Name: String, country1ConfirmedCount: Int, country2Name: String, country2ConfirmedCount: Int) {
         val dataPoint1 = DataPoint(
                 country1Name,
                 "${country1Name}1",
                 "Shortname",
                 country1ConfirmedCount,
-                0, 0, 0, "", date,
+                0, 0, 0,
+                "",
+                date,
                 clock.getCurrentDatetimeHK().toLocalDateTime(),
                 null,
                 null, setOf()
@@ -104,7 +92,8 @@ class LoadByCountryAcceptanceTest(): BaseSpringAcceptanceTest() {
                 "${country1Name}2",
                 "AlsoShortname",
                 country1ConfirmedCount,
-                0, 0, 0, "", date,
+                0, 0, 0,
+                "", date,
                 clock.getCurrentDatetimeHK().toLocalDateTime(),
                 null,
                 null, setOf()
@@ -115,7 +104,8 @@ class LoadByCountryAcceptanceTest(): BaseSpringAcceptanceTest() {
                 "${country2Name}1",
                 "Shortname",
                 country2ConfirmedCount,
-                0, 0, 0, "", date,
+                0, 0, 0,
+                "", date,
                 clock.getCurrentDatetimeHK().toLocalDateTime(),
                 null,
                 null, setOf()
@@ -126,14 +116,14 @@ class LoadByCountryAcceptanceTest(): BaseSpringAcceptanceTest() {
                 "${country2Name}2",
                 "AlsoShortname",
                 country2ConfirmedCount,
-                0, 0, 0, "", date,
+                0, 0, 0,
+                "", date,
                 clock.getCurrentDatetimeHK().toLocalDateTime(),
                 null,
                 null, setOf()
         )
 
-        dataPointRepo.saveAll(listOf(dataPoint1,dataPoint2,dataPoint3,dataPoint4))
-
+        dataPointRepo.saveAll(listOf(dataPoint1, dataPoint2, dataPoint3, dataPoint4))
 
 
     }

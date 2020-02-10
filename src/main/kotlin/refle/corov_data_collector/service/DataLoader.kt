@@ -24,52 +24,78 @@ class DataLoader(@Autowired private val restTemplate: RestTemplate,
 
     @Transactional
     fun loadData() {
-        val importDate = clock.getCurrentDateHK()
-        val stopWatch = StopWatch()
-        stopWatch.start()
-        logger.info("Starting to load latest data")
-        val response = restTemplate.getForObject("/area", Response::class.java) ?: return
-        if(!response.success)
-            return
+        try {
+            val importDate = clock.getCurrentDateHK()
+            val stopWatch = StopWatch()
+            stopWatch.start()
+            logger.info("Starting to load latest data")
+            val response = restTemplate.getForObject("/area", Response::class.java) ?: return
+            if (!response.success)
+                return
 
-        cleanData(importDate)
+            cleanData(importDate)
 
-        response.results.forEach { result ->
-            with(result){
-                val citiesSet = cities?.map {
-                    City(translate(it.cityName), it.confirmedCount, it.suspectedCount, it.curedCount, it.deadCount, it.locationId, importDate)
-                }?.toSet() ?: setOf()
+            response.results.forEach { result ->
+                with(result) {
 
-                val updateTime = convertToDateTime(updateTime) ?: return@forEach
+                    val translatedCountry = translate(result.country)
+                    val translatedProvinceShortName = translate(result.provinceShortName)
 
-                val provinceName = translate(provinceName)
-                val fixedCountry = if(provinceName == "Macao" || provinceName == "Hong Kong"){
-                    provinceName
-                }else{
-                    translate(country)
+                    val previousDay = dataPointRepo.findByImportDateAndCountryAndProvinceShortName(importDate.minusDays(1), translatedCountry, translatedProvinceShortName)
+
+                    val citiesSet = cities?.map {
+                        val translatedCityName = translate(it.cityName)
+                        val previousDayCityData = previousDay?.cities?.find { it.cityName == translatedCityName }
+
+                        if(previousDayCityData == null ) {
+                            City(translate(it.cityName), it.confirmedCount, it.suspectedCount, it.curedCount, it.deadCount, it.locationId, importDate,
+                                    confirmedDelta = it.confirmedCount, suspectedDelta = it.suspectedCount, curedDelta = it.curedCount, deadDelta = it.deadCount)
+                        }else{
+                            City(translate(it.cityName), it.confirmedCount, it.suspectedCount, it.curedCount, it.deadCount, it.locationId, importDate,
+                                    confirmedDelta = it.confirmedCount - previousDayCityData.confirmedCount,
+                                    suspectedDelta = it.suspectedCount - previousDayCityData.suspectedCount,
+                                    curedDelta = it.curedCount - previousDayCityData.curedCount,
+                                    deadDelta = it.deadCount - previousDayCityData.deadCount)
+                        }
+                    }?.toSet() ?: setOf()
+
+                    val updateTime = convertToDateTime(updateTime) ?: return@forEach
+
+                    val provinceName = translate(provinceName)
+                    val fixedCountry = if (provinceName == "Macao" || provinceName == "Hong Kong") {
+                        provinceName
+                    } else {
+                        translatedCountry
+                    }
+                    var dataPoint = DataPoint(
+                            fixedCountry,
+                            provinceName,
+                            translatedProvinceShortName,
+                            confirmedCount,
+                            suspectedCount,
+                            curedCount,
+                            deadCount,
+                            translate(comment),
+                            importDate,
+                            updateTime,
+                            convertToDateTime(createTime),
+                            convertToDateTime(modifyTime),
+                            citiesSet,
+                            confirmedDelta = confirmedCount - ( previousDay?.confirmedCount ?: 0),
+                            suspectedDelta = suspectedCount - ( previousDay?.suspectedCount ?: 0) ,
+                            deadDelta = deadCount - ( previousDay?.deadCount ?: 0),
+                            curedDelta = curedCount - ( previousDay?.curedCount ?: 0)
+                    )
+
+                    citiesSet.forEach { it.dataPoint = dataPoint }
+                    dataPointRepo.save(dataPoint)
                 }
-                var dataPoint = DataPoint(
-                        fixedCountry,
-                        provinceName,
-                        translate(provinceShortName),
-                        confirmedCount,
-                        suspectedCount,
-                        curedCount,
-                        deadCount,
-                        translate(comment),
-                        importDate,
-                        updateTime,
-                        convertToDateTime(createTime),
-                        convertToDateTime(modifyTime),
-                        citiesSet
-                )
-
-                citiesSet.forEach { it.dataPoint = dataPoint }
-                dataPointRepo.save(dataPoint)
             }
+            stopWatch.stop()
+            logger.info("Load completed and took ${stopWatch.totalTimeSeconds}s")
+        }catch( e: Exception){
+            logger.error("Error while loading latest data therefore skipping: ${e.message}", e)
         }
-        stopWatch.stop()
-        logger.info("Load completed and took ${stopWatch.totalTimeSeconds}s")
     }
 
     private val convertToDateTime = { milli:Long ->
