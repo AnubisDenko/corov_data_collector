@@ -12,9 +12,15 @@ import java.time.LocalDate
 @Repository
 interface DataPointRepo: CrudRepository<DataPoint, Long>{
     fun deleteByImportDate(date: LocalDate): Long
+
     fun findByImportDate(date:LocalDate): List<DataPoint>
+    fun findByImportDateGreaterThanEqualAndImportDateLessThanEqual(from:LocalDate, to:LocalDate): List<DataPoint>
+
     fun findByImportDateAndCountry(date:LocalDate, country:String): List<DataPoint>
+    fun findByImportDateGreaterThanEqualAndImportDateLessThanEqualAndCountry(from:LocalDate, to:LocalDate, country:String): List<DataPoint>
+
     fun findByImportDateAndCountryAndProvinceShortName(date:LocalDate, country:String, provinceShortName: String): DataPoint?
+    fun findByImportDateGreaterThanEqualAndImportDateLessThanEqualAndCountryAndProvinceShortName(from:LocalDate, to:LocalDate, country:String, provinceShortName: String): List<DataPoint>
 }
 
 @Repository

@@ -50,9 +50,9 @@ type CityData {
 }
 
 type Query {
-  statsByCountry(date: String): [CountryData!]
-  statsByProvince(date: String, country: String): [ProvinceData]
-  provinceDetails(country: String, provinceName: String, date: String): [CityData]
+  statsByCountry(from: String, to: String): [CountryData!]
+  statsByProvince(from: String, to: String, country: String): [ProvinceData]
+  provinceDetails(country: String, provinceName: String, from: String, to: String): [CityData]
 }
 
 
