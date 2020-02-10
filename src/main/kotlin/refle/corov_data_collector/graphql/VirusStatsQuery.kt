@@ -30,10 +30,14 @@ class VirusStatsQuery(@Autowired private val dataLoader: DataLoader, @Autowired 
                     left.comment + right.comment,
                     left.importDate,
                     left.updateTime,
-                    null,null, setOf())
+                    null,null, setOf(),
+                    confirmedDelta = left.confirmedDelta + right.confirmedDelta,
+                    suspectedDelta = left.suspectedDelta + right.suspectedDelta,
+                    curedDelta = left.curedDelta + right.curedDelta,
+                    deadDelta = left.deadDelta + right.deadDelta)
             }
             with(aggregate) {
-                return@map refle.corov_data_collector.model.CountryData(importDate, country, confirmedCount, curedCount, suspectedCount, deadCount)
+                return@map refle.corov_data_collector.model.CountryData(importDate, country, confirmedCount, curedCount, suspectedCount, deadCount, suspectedDelta, deadDelta, curedDelta, confirmedDelta)
             }
         }
     }
@@ -41,7 +45,7 @@ class VirusStatsQuery(@Autowired private val dataLoader: DataLoader, @Autowired 
     fun getStatsByProvince(date: String, country: String): List<ProvinceData> {
         val dataPoints = loadLatestDataPoints(date, country)
         return dataPoints.map {
-            ProvinceData(it.importDate, it.country, it.provinceName, it.provinceShortName, it.confirmedCount, it.curedCount, it.suspectedCount, it.deadCount)
+            ProvinceData(it.importDate, it.country, it.provinceName, it.provinceShortName, it.confirmedCount, it.curedCount, it.suspectedCount, it.deadCount, it.suspectedDelta, it.deadDelta, it.curedDelta, it.confirmedDelta)
         }
     }
 
@@ -53,7 +57,20 @@ class VirusStatsQuery(@Autowired private val dataLoader: DataLoader, @Autowired 
 
             // for now I assume there is only one data point
             val result = dataPointRepo.findByImportDateAndCountryAndProvinceShortName(searchDate, country, provinceName) ?: return emptyList()
-            return result.cities.map { city ->  CityData(result.importDate, result.country, result.provinceName, result.provinceShortName, city.cityName, city.confirmedCount, city.curedCount, city.suspectedCount, city.locationId, city.deadCount) }
+            return result.cities.map { city ->  CityData(result.importDate,
+                    result.country,
+                    result.provinceName,
+                    result.provinceShortName,
+                    city.cityName,
+                    city.confirmedCount,
+                    city.curedCount,
+                    city.suspectedCount,
+                    city.locationId,
+                    city.deadCount,
+                    city.suspectedDelta,
+                    city.deadDelta,
+                    city.curedDelta,
+                    city.confirmedDelta) }
         }
 
         return listOf()

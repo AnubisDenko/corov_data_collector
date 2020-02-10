@@ -9,7 +9,12 @@ data class CountryData(
         val confirmedCount: Int,
         val curedCount: Int,
         val suspectedCount: Int,
-        val deadCount: Int)
+        val deadCount: Int,
+        val suspectedDelta:Int,
+        val deadDelta:Int,
+        val curedDelta:Int,
+        val confirmedDelta:Int
+)
 
 data class ProvinceData(
         val importDate: LocalDate,
@@ -19,7 +24,12 @@ data class ProvinceData(
         val confirmedCount: Int,
         val curedCount: Int,
         val suspectedCount: Int,
-        val deadCount: Int)
+        val deadCount: Int,
+        val suspectedDelta:Int,
+        val deadDelta:Int,
+        val curedDelta:Int,
+        val confirmedDelta:Int
+)
 
 data class CityData(
         val importDate: LocalDate,
@@ -31,4 +41,9 @@ data class CityData(
         val curedCount: Int,
         val suspectedCount: Int,
         val locationId: Int,
-        val deadCount: Int)
+        val deadCount: Int,
+        val suspectedDelta:Int,
+        val deadDelta:Int,
+        val curedDelta:Int,
+        val confirmedDelta:Int
+)

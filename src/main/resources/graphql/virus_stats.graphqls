@@ -11,6 +11,10 @@ type CountryData {
   deadCount: Int
   importDate: String
   suspectedCount: Int
+  suspectedDelta:Int
+  deadDelta:Int
+  curedDelta:Int
+  confirmedDelta:Int
 }
 
 type ProvinceData {
@@ -22,6 +26,10 @@ type ProvinceData {
   curedCount: Int
   suspectedCount: Int
   deadCount: Int
+  suspectedDelta:Int
+  deadDelta:Int
+  curedDelta:Int
+  confirmedDelta:Int
 }
 
 type CityData {
@@ -35,6 +43,10 @@ type CityData {
   suspectedCount: Int
   locationId: Int
   deadCount: Int
+  suspectedDelta:Int
+  deadDelta:Int
+  curedDelta:Int
+  confirmedDelta:Int
 }
 
 type Query {
