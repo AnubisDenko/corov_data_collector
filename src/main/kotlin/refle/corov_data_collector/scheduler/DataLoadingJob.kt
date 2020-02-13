@@ -15,7 +15,7 @@ import java.time.ZonedDateTime
 @Component
 class DataLoadingJob(@Autowired private val dataLoader: DataLoader, @Autowired private val scheduledJobRepo: ScheduledJobRepo){
 
-    @Scheduled(zone = "Asia/Hong_Kong", cron = "0 0 7-20 * * ?")
+    @Scheduled(zone = "Asia/Hong_Kong", cron = "0 10 * * * ?")
     fun execute() {
         GlobalScope.launch {
             val stopWatch = StopWatch()
