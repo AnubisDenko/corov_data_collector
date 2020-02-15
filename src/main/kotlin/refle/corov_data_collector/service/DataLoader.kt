@@ -38,10 +38,20 @@ class DataLoader(@Autowired private val restTemplate: RestTemplate,
             response.results.forEach { result ->
                 with(result) {
 
+                    // translation and mapping
                     val translatedCountry = translate(result.country)
+                    val provinceName = translate(provinceName)
+                    val fixedCountry = if (provinceName == "Macao" || provinceName == "Hong Kong") {
+                        provinceName
+                    } else {
+                        translatedCountry
+                    }
+
                     val translatedProvinceShortName = translate(result.provinceShortName)
 
-                    val previousDay = dataPointRepo.findByImportDateAndCountryAndProvinceShortName(importDate.minusDays(1), translatedCountry, translatedProvinceShortName)
+
+                    // delta calc
+                    val previousDay = dataPointRepo.findByImportDateAndCountryAndProvinceShortName(importDate.minusDays(1), fixedCountry, translatedProvinceShortName)
 
                     val citiesSet = cities?.map {
                         val translatedCityName = translate(it.cityName)
@@ -60,13 +70,6 @@ class DataLoader(@Autowired private val restTemplate: RestTemplate,
                     }?.toSet() ?: setOf()
 
                     val updateTime = convertToDateTime(updateTime) ?: return@forEach
-
-                    val provinceName = translate(provinceName)
-                    val fixedCountry = if (provinceName == "Macao" || provinceName == "Hong Kong") {
-                        provinceName
-                    } else {
-                        translatedCountry
-                    }
                     var dataPoint = DataPoint(
                             fixedCountry,
                             provinceName,

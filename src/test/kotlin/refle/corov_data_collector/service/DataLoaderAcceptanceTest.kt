@@ -168,6 +168,24 @@ class DataLoaderAcceptanceTest: BaseSpringAcceptanceTest(){
         }
     }
 
+    @Test
+    fun `calculates the delta for Hongkong and Macao`(){
+        setupDataPointWithCityAndSave("Hong Kong", "Hong Kong",clock.getCurrentDateHK().minusDays(1),10, 0,6,5, setOf())
+        setupDataPointWithCityAndSave("Macao", "Macao",clock.getCurrentDateHK().minusDays(1),10, 0,6,5, setOf())
+
+
+        val response = loadFixture("fixtures/hong_kong_and_macau_delta_calc.json")
+        expectSuccessfulCallAndReply("${sourceConfigParams.baseUrl}area", response)
+
+        dataLoader.loadData()
+
+        val macau = dataPointRepo.findByImportDate(clock.getCurrentDateHK()).find { it.country == "Macao" } ?: fail("No data for Macao")
+        val hk = dataPointRepo.findByImportDate(clock.getCurrentDateHK()).find { it.country == "Hong Kong" } ?: fail("No data for Hong Kong")
+
+        assertEquals(20, hk.confirmedDelta)
+        assertEquals(8, macau.confirmedDelta)
+    }
+
     private val setupDataPointWithCityAndSave = { country: String, province: String, date: LocalDate, confirmedCount: Int, suspectedCount: Int , curedCount: Int, deadCount: Int, cities: Set<City> ->
         val dataPoint = setupDataPointWithCity(country, province, date, confirmedCount, suspectedCount, curedCount, deadCount, cities)
         dataPointRepo.save(dataPoint)

@@ -1,0 +1,33 @@
+{
+  "results": [
+    {
+      "country": "中国",
+      "provinceName": "香港",
+      "provinceShortName": "香港",
+      "confirmedCount": 30,
+      "suspectedCount": 0,
+      "curedCount": 0,
+      "deadCount": 0,
+      "cities": [],
+      "comment": "",
+      "updateTime": 1580605315468,
+      "createTime": null,
+      "modifyTime": null
+    },
+    {
+      "country": "中国",
+      "provinceName": "澳门",
+      "provinceShortName": "澳门",
+      "confirmedCount": 18,
+      "suspectedCount": 0,
+      "curedCount": 0,
+      "deadCount": 0,
+      "cities": [],
+      "comment": "",
+      "updateTime": 1580617243947,
+      "createTime": null,
+      "modifyTime": null
+    }
+  ],
+  "success": true
+}
