@@ -32,7 +32,7 @@ class VirusStatsQuery(@Autowired private val dataLoader: DataLoader, @Autowired 
                         left.comment + right.comment,
                         key.importDate,
                         left.updateTime,
-                        null, null, setOf(),
+                        setOf(),
                         confirmedDelta = left.confirmedDelta + right.confirmedDelta,
                         suspectedDelta = left.suspectedDelta + right.suspectedDelta,
                         curedDelta = left.curedDelta + right.curedDelta,

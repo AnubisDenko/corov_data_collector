@@ -71,14 +71,12 @@ class DataLoaderAcceptanceTest: BaseSpringAcceptanceTest(){
 
         val china = dataPoints.find { it.country == "China" } ?: fail("No data for China found")
 
-        val expectedUpdateTime = convertToDateTime(1580618843298L)
+        val expectedUpdateTime = convertToDateTime(1581775737299L)
         assertEquals(expectedUpdateTime, china.updateTime)
-        assertNull(china.createTime)
-        assertNull(china.modifyTime)
         assertEquals("Hunan Province", china.provinceName)
         assertEquals("Hunan", china.provinceShortName)
 
-        val cnCities = china.cities ?: fail("No cities saved for China data")
+        val cnCities = china.cities
         assertEquals(14, cnCities.size)
 
         assertNotNull(cnCities.find { it.cityName == "Changsha" })
@@ -115,7 +113,7 @@ class DataLoaderAcceptanceTest: BaseSpringAcceptanceTest(){
 
     @Test
     fun `calculates the delta for loaded datapoint compared to previous day`(){
-        setupDataPointWithCityAndSave("China", "Hunan",clock.getCurrentDateHK().minusDays(1),363, 0,6,5, setOf())
+        setupDataPointWithCityAndSave("China", "Hunan",clock.getCurrentDateHK().minusDays(1),363, 0,6,1, setOf())
         val response = loadFixture("fixtures/sampleForDeltaCalc.json")
         expectSuccessfulCallAndReply("${sourceConfigParams.baseUrl}area", response)
 
@@ -124,10 +122,10 @@ class DataLoaderAcceptanceTest: BaseSpringAcceptanceTest(){
         val hunanToday = dataPointRepo.findByImportDate(clock.getCurrentDateHK()).first()
 
         with(hunanToday) {
-            assertEquals(100, confirmedDelta)
-            assertEquals(5, suspectedDelta)
-            assertEquals(5, curedDelta)
-            assertEquals(15, deadDelta)
+            assertEquals(638, confirmedDelta)
+            assertEquals(0, suspectedDelta)
+            assertEquals(419, curedDelta)
+            assertEquals(1, deadDelta)
         }
     }
 
@@ -144,10 +142,10 @@ class DataLoaderAcceptanceTest: BaseSpringAcceptanceTest(){
         val changshaCreated = dataPointRepo.findByImportDate(clock.getCurrentDateHK()).first().cities.find { it.cityName == "Changsha" } ?: fail("Test city not found")
 
         with(changshaCreated) {
-            assertEquals(12, confirmedDelta)
-            assertEquals(5, suspectedDelta)
-            assertEquals(2, curedDelta)
-            assertEquals(5, deadDelta)
+            assertEquals(141, confirmedDelta)
+            assertEquals(0, suspectedDelta)
+            assertEquals(73, curedDelta)
+            assertEquals(-5, deadDelta) // due to change in test data
         }
     }
 
@@ -161,10 +159,10 @@ class DataLoaderAcceptanceTest: BaseSpringAcceptanceTest(){
         val changshaCreated = dataPointRepo.findByImportDate(clock.getCurrentDateHK()).first().cities.find { it.cityName == "Changsha" } ?: fail("Test city not found")
 
         with(changshaCreated) {
-            assertEquals(112, confirmedDelta)
-            assertEquals(5, suspectedDelta)
-            assertEquals(2, curedDelta)
-            assertEquals(10, deadDelta)
+            assertEquals(241, confirmedDelta)
+            assertEquals(0, suspectedDelta)
+            assertEquals(73, curedDelta)
+            assertEquals(0, deadDelta)
         }
     }
 

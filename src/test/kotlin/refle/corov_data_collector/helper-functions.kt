@@ -34,8 +34,7 @@ fun setupDataPointWithCity(country: String, province: String, date: LocalDate, c
             "",
             date,
             LocalDateTime.now(),
-            null,
-            null, testCities
+            testCities
     )
 
     testCities.forEach { it.dataPoint = dataPoint }

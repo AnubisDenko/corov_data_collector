@@ -133,8 +133,7 @@ class LoadByCountryAcceptanceTest() : BaseSpringAcceptanceTest() {
                 "",
                 date,
                 clock.getCurrentDatetimeHK().toLocalDateTime(),
-                null,
-                null, setOf()
+                setOf()
         )
 
         val dataPoint2 = DataPoint(
@@ -145,8 +144,7 @@ class LoadByCountryAcceptanceTest() : BaseSpringAcceptanceTest() {
                 0, 0, 0,
                 "", date,
                 clock.getCurrentDatetimeHK().toLocalDateTime(),
-                null,
-                null, setOf()
+                setOf()
         )
 
         val dataPoint3 = DataPoint(
@@ -157,8 +155,7 @@ class LoadByCountryAcceptanceTest() : BaseSpringAcceptanceTest() {
                 0, 0, 0,
                 "", date,
                 clock.getCurrentDatetimeHK().toLocalDateTime(),
-                null,
-                null, setOf()
+                setOf()
         )
 
         val dataPoint4 = DataPoint(
@@ -169,8 +166,7 @@ class LoadByCountryAcceptanceTest() : BaseSpringAcceptanceTest() {
                 0, 0, 0,
                 "", date,
                 clock.getCurrentDatetimeHK().toLocalDateTime(),
-                null,
-                null, setOf()
+                setOf()
         )
 
         dataPointRepo.saveAll(listOf(dataPoint1, dataPoint2, dataPoint3, dataPoint4))

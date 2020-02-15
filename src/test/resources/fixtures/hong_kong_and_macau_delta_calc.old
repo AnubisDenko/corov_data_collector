@@ -1,14 +1,9 @@
 {
   "results": [
     {
-      "locationId": 810000,
-      "continentName": "亚洲",
-      "continentEnglishName": "Asia",
-      "countryName": "中国",
-      "countryEnglishName": "China",
+      "country": "中国",
       "provinceName": "香港",
       "provinceShortName": "香港",
-      "provinceEnglishName": "Hong Kong",
       "confirmedCount": 30,
       "suspectedCount": 0,
       "curedCount": 0,
@@ -23,7 +18,7 @@
       "locationId": 820000,
       "continentName": "亚洲",
       "continentEnglishName": "Asia",
-      "countryName": "中国",
+      "country": "中国",
       "countryEnglishName": "China",
       "provinceName": "澳门",
       "provinceShortName": "澳门",

@@ -1,9 +1,14 @@
 {
   "results": [
     {
-      "country": "中国",
+      "locationId": 810000,
+      "continentName": "亚洲",
+      "continentEnglishName": "Asia",
+      "countryName": "中国",
+      "countryEnglishName": "China",
       "provinceName": "香港",
       "provinceShortName": "香港",
+      "provinceEnglishName": "Hong Kong",
       "confirmedCount": 14,
       "suspectedCount": 0,
       "curedCount": 0,
@@ -15,9 +20,14 @@
       "modifyTime": null
     },
     {
-      "country": "中国",
+      "locationId": 820000,
+      "continentName": "亚洲",
+      "continentEnglishName": "Asia",
+      "countryName": "中国",
+      "countryEnglishName": "China",
       "provinceName": "澳门",
       "provinceShortName": "澳门",
+      "provinceEnglishName": "Macau",
       "confirmedCount": 8,
       "suspectedCount": 0,
       "curedCount": 0,

@@ -26,14 +26,6 @@ data class DataPoint(
         @Temporal(TemporalType.TIMESTAMP)
         val updateTime: LocalDateTime,
 
-        @Temporal(TemporalType.TIMESTAMP)
-        @Column(nullable = true)
-
-        val createTime: LocalDateTime?,
-        @Temporal(TemporalType.TIMESTAMP)
-        @Column(nullable = true)
-        val modifyTime: LocalDateTime?,
-
         @OneToMany(
                 cascade = [ CascadeType.ALL ],
                 orphanRemoval = true,
