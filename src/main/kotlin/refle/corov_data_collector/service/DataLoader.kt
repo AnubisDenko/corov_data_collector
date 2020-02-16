@@ -9,6 +9,7 @@ import refle.corov_data_collector.model.City
 import refle.corov_data_collector.model.DataPoint
 import refle.corov_data_collector.model.Response
 import refle.corov_data_collector.persistence.DataPointRepo
+import java.lang.Thread.sleep
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -106,6 +107,7 @@ class DataLoader(@Autowired private val restTemplate: RestTemplate,
                 }else{
                     false
                 }
+                sleep(5000)
             }
         }while(!completed)
     }
