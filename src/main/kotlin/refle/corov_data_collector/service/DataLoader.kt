@@ -121,6 +121,6 @@ class DataLoader(@Autowired private val restTemplate: RestTemplate,
 
     private val cleanData = { forDate: LocalDate -> dataPointRepo.deleteByImportDate(forDate)}
 
-    private val translate = { chinese:String -> translator.translateChineseToEnglish(chinese)}
+    private val translate = { chinese:String? -> if(chinese == null) "" else translator.translateChineseToEnglish(chinese)}
 
 }
