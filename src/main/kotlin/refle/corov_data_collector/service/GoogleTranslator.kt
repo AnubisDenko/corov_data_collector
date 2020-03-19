@@ -41,6 +41,7 @@ class GoogleTranslator(@Autowired private val appConfig: AppConfig, @Autowired p
             }
         }catch( e: Exception) {
             logger.error("Error while translating text to english: $chinese ( ${chinese.length} )")
+            throw e
         }
     }
 
