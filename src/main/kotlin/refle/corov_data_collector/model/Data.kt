@@ -82,10 +82,7 @@ data class City(
 
 @Entity
 data class Translation(
-        @Column(length = 2048)
         val chinese: String,
-
-        @Column(length = 2048)
         val english: String,
 
         @Id @GeneratedValue

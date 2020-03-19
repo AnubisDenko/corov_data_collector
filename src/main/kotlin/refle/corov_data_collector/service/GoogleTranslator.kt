@@ -4,6 +4,7 @@ import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.translate.Translate
 import com.google.cloud.translate.TranslateOptions
 import org.jasypt.util.text.AES256TextEncryptor
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
@@ -16,6 +17,7 @@ import refle.corov_data_collector.persistence.TranslationRepo
 @Profile("!test")
 class GoogleTranslator(@Autowired private val appConfig: AppConfig, @Autowired private val translationRepo: TranslationRepo):Translator {
     private val translate: Translate
+    private val logger = LoggerFactory.getLogger(this::class.java)
 
     init {
         val googleCredentialsFile = decrypt(appConfig.passphrase, loadFile("google-translate.enc"))
@@ -27,14 +29,18 @@ class GoogleTranslator(@Autowired private val appConfig: AppConfig, @Autowired p
 
 
     override fun translateChineseToEnglish(chinese: String): String{
-        val cached = translationRepo.findByChinese(chinese)
+        try {
+            val cached = translationRepo.findByChinese(chinese)
 
-        return if(cached != null){
-            cached.english
-        }else{
-            val translatedText = translate.translate(chinese).translatedText
-            translationRepo.save(Translation(chinese, translatedText))
-            translatedText
+            return if (cached != null) {
+                cached.english
+            } else {
+                val translatedText = translate.translate(chinese).translatedText
+                translationRepo.save(Translation(chinese, translatedText))
+                translatedText
+            }
+        }catch( e: Exception) {
+            logger.error("Error while translating text to english: $chinese ( ${chinese.length} )")
         }
     }
 
@@ -53,3 +59,5 @@ class GoogleTranslator(@Autowired private val appConfig: AppConfig, @Autowired p
 interface Translator{
     fun translateChineseToEnglish(chinese:String): String
 }
+
+
