@@ -74,6 +74,8 @@ class DataLoader(@Autowired private val restTemplate: RestTemplate,
                         }?.toSet() ?: setOf()
 
                         val updateTime = convertToDateTime(updateTime) ?: return@forEach
+                        val translatedComment = if(comment != null ) translate(comment) else ""
+                        
                         var dataPoint = DataPoint(
                                 fixedCountry,
                                 provinceName,
@@ -82,7 +84,7 @@ class DataLoader(@Autowired private val restTemplate: RestTemplate,
                                 suspectedCount,
                                 curedCount,
                                 deadCount,
-                                translate(comment),
+                                translatedComment,
                                 importDate,
                                 updateTime,
                                 citiesSet,
@@ -121,6 +123,6 @@ class DataLoader(@Autowired private val restTemplate: RestTemplate,
 
     private val cleanData = { forDate: LocalDate -> dataPointRepo.deleteByImportDate(forDate)}
 
-    private val translate = { chinese:String? -> if(chinese == null) "" else translator.translateChineseToEnglish(chinese)}
+    private val translate = { chinese:String -> translator.translateChineseToEnglish(chinese)}
 
 }
