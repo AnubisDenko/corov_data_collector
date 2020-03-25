@@ -84,7 +84,6 @@ data class City(
 data class Translation(
         val chinese: String,
         val english: String,
-
         @Id @GeneratedValue
         val id: Long? = null
 )

@@ -74,8 +74,8 @@ class DataLoader(@Autowired private val restTemplate: RestTemplate,
                         }?.toSet() ?: setOf()
 
                         val updateTime = convertToDateTime(updateTime) ?: return@forEach
-                        val translatedComment = if(comment != null ) translate(comment) else ""
-                        
+                        val translatedComment = ""
+
                         var dataPoint = DataPoint(
                                 fixedCountry,
                                 provinceName,
